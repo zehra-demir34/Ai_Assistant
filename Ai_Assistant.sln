@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileStorage", "FileStorage"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{BE305362-A77F-4C22-88EA-69AABF098B8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web.api", "src\Api\web.api\web.api.csproj", "{57F88754-A3F8-301A-C02F-7B246B97C64B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "web.api", "src\web.api\web.api.csproj", "{141E5A4F-A98E-1E94-E0C1-0FF4E4A962B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +25,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{57F88754-A3F8-301A-C02F-7B246B97C64B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57F88754-A3F8-301A-C02F-7B246B97C64B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{57F88754-A3F8-301A-C02F-7B246B97C64B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{57F88754-A3F8-301A-C02F-7B246B97C64B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{141E5A4F-A98E-1E94-E0C1-0FF4E4A962B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{141E5A4F-A98E-1E94-E0C1-0FF4E4A962B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{141E5A4F-A98E-1E94-E0C1-0FF4E4A962B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{141E5A4F-A98E-1E94-E0C1-0FF4E4A962B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
