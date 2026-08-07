@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application
+namespace Application.Chat
 {
-    public class Class1
+    public class ChatResponse
     {
+        public string Response { get; set; } = string.Empty;
     }
 }
+
