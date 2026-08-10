@@ -4,9 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application
+namespace Application.Chat
 {
-    public class Class1
+    public record ChatRequest
     {
+        public string Message { get; init; } = string.Empty;
+
     }
 }
+

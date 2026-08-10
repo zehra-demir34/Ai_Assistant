@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Infrastructure
+namespace Application.Chat
 {
-    public class Class1
+    public interface IChatService
     {
+        Task<ChatResponse> GetResponseAsync(ChatRequest request);
     }
 }
+
