@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Application.Chat
 {
-    public class ChatResponse
+    public record ChatResponse
     {
-        public string Response { get; set; } = string.Empty;
+        public string Response { get; init; } = string.Empty;
     }
 }
 
