@@ -7,14 +7,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities
 {
-    public class ChatMessage
+    public class ChatSession
     {
         [Key]
-        public Guid MessageId { get; set; }
         public Guid SessionId { get; set; }
-        public ChatRole Role { get; set; }
-        public string Content { get; set; } = string.Empty;
         public DateTime CreatedAt {  get; set; }= DateTime.UtcNow;
-        public ChatSession Session {  get; set; }
+        public ICollection<ChatMessage> Messages { get; set; }= new List<ChatMessage>();
     }
 }
