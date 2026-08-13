@@ -1,6 +1,7 @@
 using Application.Chat;
 using Infrastructure;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using Microsoft.EntityFrameworkCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IChatService, MafAgentService>();
 
 // Add services to the container.
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection")));
 
 builder.Services.AddControllers();
 
