@@ -2,6 +2,8 @@ using Application.Chat;
 using Infrastructure;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.EntityFrameworkCore;
+using MediatR;
+using Application.Chat.Commands.CreateSession;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +15,11 @@ builder.Services.AddScoped<IChatService, MafAgentService>();
 
 builder.Services.AddScoped<IChatSessionService, ChatSessionService>();
 
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection")));
+
+builder.Services.AddMediatR(cfg =>cfg.RegisterServicesFromAssembly(typeof(CreateSessionCommand).Assembly));
 
 builder.Services.AddControllers();
 

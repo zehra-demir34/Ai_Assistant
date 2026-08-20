@@ -47,7 +47,7 @@ namespace Infrastructure
 
         public async Task<List<ChatMessage>> GetChatMessageAsync(Guid sessionId)
         {
-            return await _dbContext.ChatMessages.Where(x => x.SessionId == sessionId).ToListAsync();
+            return await _dbContext.ChatMessages.Where(x => x.SessionId == sessionId).OrderBy(x=>x.CreatedAt).ToListAsync();
             
         }
 
@@ -58,9 +58,9 @@ namespace Infrastructure
 
         public async Task DeleteSessionAsync(Guid sessionId)
         {
-            var deletedSession=await _dbContext.ChatSessions.FirstOrDefaultAsync(x=>x.SessionId==sessionId);
-            _dbContext.ChatSessions.Remove(deletedSession);
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.ChatSessions
+                .Where(x => x.SessionId == sessionId)
+                .ExecuteDeleteAsync();
         }
 
     }

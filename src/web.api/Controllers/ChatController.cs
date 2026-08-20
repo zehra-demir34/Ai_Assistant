@@ -2,6 +2,12 @@
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MediatR;
+using Application.Chat.Commands.CreateSession;
+using Application.Chat.Commands.SendMessage;
+using Application.Chat.Queries.GetMessage;
+using Application.Chat.Queries.GetSession;
+using Application.Chat.Commands.DeleteSession;
 
 namespace web.api.Controllers
 {
@@ -9,66 +15,47 @@ namespace web.api.Controllers
     [ApiController]
     public class ChatController : ControllerBase
     {
-        private readonly IChatService _chatService;
-        private readonly IChatSessionService _chatSessionService;
-
-        public ChatController(IChatService chatService,IChatSessionService chatSessionService)
+        private readonly IMediator _mediator;
+        public ChatController(IMediator mediator)
         {
-            _chatService = chatService;
-            _chatSessionService = chatSessionService;
+            _mediator = mediator;
         }
 
         [HttpPost("sessions")]
-        public async Task<IActionResult> CreateSession()
+        public async Task<IActionResult> CreateSession(CancellationToken ct)
         {
-            var sessionId = await _chatSessionService.CreateSessionAsync();
+            var sessionId = await _mediator.Send(new CreateSessionCommand(),ct);
             return Ok( sessionId );
         }
 
         [HttpPost]
-        public async Task<IActionResult> Chat(ChatRequest request)
+        public async Task<IActionResult> Chat(SendMessageCommand command,CancellationToken ct)
         {
-            if (!await _chatSessionService.IsSessionExistAsync(request.SessionId))
-            {
-                return NotFound("Session not found.");
-            }
-            await _chatSessionService.AddMessageAsync(request.SessionId, ChatRole.User, request.Message);
-
-            var result=await _chatService.GetResponseAsync(request);
-
-            await _chatSessionService.AddMessageAsync(request.SessionId,ChatRole.Assistant, result.Response);
-
+            
+            var result=await _mediator.Send(command,ct);
             return Ok(result);
         }
 
         [HttpGet("sessions/{sessionId}/messages")]
-        public async Task<IActionResult> GetMessages(Guid sessionId)
+        public async Task<IActionResult> GetMessages(Guid sessionId,CancellationToken ct)
         {
 
-            if (!await _chatSessionService.IsSessionExistAsync(sessionId))
-            {
-                return NotFound("Session not found.");
-            }
-            var messages=await _chatSessionService.GetChatMessageAsync(sessionId);
+            var messages=await _mediator.Send(new GetMessageQuery(sessionId),ct);
             return Ok(messages);
         }
 
         [HttpGet("sessions")]
-        public async Task<IActionResult> GetSessions()
+        public async Task<IActionResult> GetSessions(CancellationToken ct)
         {
-            var sessions=await _chatSessionService.GetChatSessionsAsync();
+            var sessions=await _mediator.Send(new GetSessionQuery(),ct);
             return Ok(sessions);
         }
 
         [HttpDelete("sessions/{sessionId}")]
-        public async Task<IActionResult> DeleteSession(Guid sessionId)
+        public async Task<IActionResult> DeleteSession(Guid sessionId,CancellationToken ct)
         {
-            if (!await _chatSessionService.IsSessionExistAsync(sessionId))
-            {
-                return NotFound("Session not found.");
-            }
-
-            await _chatSessionService.DeleteSessionAsync(sessionId);
+           
+            await _mediator.Send(new DeleteSessionCommand(sessionId),ct);
             return NoContent();
         }
     }
