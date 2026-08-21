@@ -8,6 +8,7 @@ namespace Application.Chat
 {
     public record ChatRequest
     {
+        public Guid SessionId { get; set; }
         public string Message { get; init; } = string.Empty;
 
     }

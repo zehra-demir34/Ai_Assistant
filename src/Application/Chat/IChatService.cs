@@ -9,6 +9,7 @@ namespace Application.Chat
     public interface IChatService
     {
         Task<ChatResponse> GetResponseAsync(ChatRequest request);
+
     }
 }
 

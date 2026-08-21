@@ -1,4 +1,5 @@
 ﻿using Application.Chat;
+using Domain.Entities;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Configuration;
 using OpenAI;
@@ -16,6 +17,9 @@ namespace Infrastructure
     public class MafAgentService : IChatService
     {
         private readonly AIAgent _agent;
+
+
+
         public MafAgentService(IConfiguration config)
         {
             var _apiKey = config["OpenAI:apiKey"];
@@ -36,6 +40,7 @@ namespace Infrastructure
                 instructions: "You are a helpful assistant.",
                 name: "ChatAssistant");
         }
+
 
         public async Task<ChatResponse> GetResponseAsync(ChatRequest request)
         {
