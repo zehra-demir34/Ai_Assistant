@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +11,15 @@ namespace Application.Chat.Queries.GetSession
 {
     public class GetSessionQueryHandler : IRequestHandler<GetSessionQuery,List<ChatSession>>
     {
-        private readonly IChatSessionService _chatSessionService;
+        private readonly IApplicationDbContext _context;
 
-        public GetSessionQueryHandler(IChatSessionService chatSessionService)
+        public GetSessionQueryHandler( IApplicationDbContext context)
         {
-            _chatSessionService = chatSessionService;
+            _context = context;
         }
         public async Task<List<ChatSession>> Handle(GetSessionQuery request,CancellationToken cancellationToken)
         {
-            return await _chatSessionService.GetChatSessionsAsync();
+            return await _context.ChatSessions.AsNoTracking().OrderByDescending(x => x.CreatedAt).ToListAsync(cancellationToken);
         }
     }
 }

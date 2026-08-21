@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,19 +10,26 @@ namespace Application.Chat.Commands.DeleteSession
 {
     public class DeleteSessionHandler : IRequestHandler<DeleteSessionCommand>
     {
-        private readonly IChatSessionService _chatSessionService;
-        public DeleteSessionHandler(IChatSessionService chatSessionService)
+        private readonly IApplicationDbContext _context;
+        public DeleteSessionHandler(IApplicationDbContext context)
         {
-            _chatSessionService = chatSessionService;
+            _context = context;
         }
         public async Task Handle(DeleteSessionCommand request,CancellationToken cancellationToken)
         {
-            var sessionExists = await _chatSessionService.IsSessionExistAsync(request.SessionId);
-            if (!sessionExists)
+
+            var session = await _context.ChatSessions
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.SessionId == request.SessionId, cancellationToken);
+
+            if (session is null)
             {
                 throw new KeyNotFoundException("Session not found.");
             }
-            await _chatSessionService.DeleteSessionAsync(request.SessionId);
+
+            _context.ChatSessions.Remove(session);
+            await _context.SaveChangesAsync(cancellationToken);
+
         }
 
     }
