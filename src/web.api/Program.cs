@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Application.Chat.Commands.CreateSession;
+using Infrastructure.Tools;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 //var apikey = builder.Configuration["OpenAI:apiKey"];
 builder.Services.AddScoped<IChatService, MafAgentService>();
+
+builder.Services.AddHttpClient<WeatherTool>();
 
 // Add services to the container.
 
