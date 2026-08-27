@@ -2,6 +2,7 @@
 using Domain.Entities;
 using Microsoft.Agents.AI;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.AI;
 using OpenAI;
 using OpenAI.Chat;
 using OpenAI.Responses;
@@ -11,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Infrastructure.Tools;
 
 namespace Infrastructure
 {
@@ -18,9 +20,7 @@ namespace Infrastructure
     {
         private readonly AIAgent _agent;
 
-
-
-        public MafAgentService(IConfiguration config)
+        public MafAgentService(IConfiguration config,WeatherTool weatherTool)
         {
             var _apiKey = config["OpenAI:apiKey"];
 
@@ -38,14 +38,15 @@ namespace Infrastructure
 
             _agent = chatClient.AsAIAgent(
                 instructions: "You are a helpful assistant.",
-                name: "ChatAssistant");
+                name: "ChatAssistant",
+                tools: [AIFunctionFactory.Create(weatherTool.GetWeather)] );
         }
 
 
-        public async Task<ChatResponse> GetResponseAsync(ChatRequest request)
+        public async Task<Application.Chat.ChatResponse> GetResponseAsync(ChatRequest request)
         {
             var response = await _agent.RunAsync(request.Message);
-            return new ChatResponse { Response = response.Text };
+            return new Application.Chat.ChatResponse { Response = response.Text };
         }
     }
 }
