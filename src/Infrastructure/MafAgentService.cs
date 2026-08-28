@@ -20,7 +20,7 @@ namespace Infrastructure
     {
         private readonly AIAgent _agent;
 
-        public MafAgentService(IConfiguration config,WeatherTool weatherTool)
+        public MafAgentService(IConfiguration config,WeatherTool weatherTool,CurrencyTool currencyTool)
         {
             var _apiKey = config["OpenAI:apiKey"];
 
@@ -39,7 +39,10 @@ namespace Infrastructure
             _agent = chatClient.AsAIAgent(
                 instructions: "You are a helpful assistant.",
                 name: "ChatAssistant",
-                tools: [AIFunctionFactory.Create(weatherTool.GetWeather)] );
+                tools: [AIFunctionFactory.Create(weatherTool.GetWeather),
+                        AIFunctionFactory.Create(currencyTool.GetExchangeRate)
+                ]
+            );
         }
 
 
