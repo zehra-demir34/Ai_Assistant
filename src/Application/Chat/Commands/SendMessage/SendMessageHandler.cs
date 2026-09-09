@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Application.Chat.Commands.SendMessage
 {
-    public class SendMessageHandler:IRequestHandler<SendMessageCommand,ChatResponse>
+    public class SendMessageHandler:IRequestHandler<SendMessageCommand,IAsyncEnumerable<string>>
     {
         private readonly IChatService _chatService;
         private readonly IApplicationDbContext _context;
@@ -23,7 +24,7 @@ namespace Application.Chat.Commands.SendMessage
             _context = context;
         }
 
-        public async Task<ChatResponse> Handle(SendMessageCommand request,CancellationToken cancellationToken)
+        public async Task<IAsyncEnumerable<string>> Handle(SendMessageCommand request,CancellationToken cancellationToken)
         {
             var sessionExists = await _context.ChatSessions.AsNoTracking().AnyAsync(x=>x.SessionId==request.SessionId,cancellationToken);
 
@@ -48,21 +49,45 @@ namespace Application.Chat.Commands.SendMessage
                 Message = request.Message
             };
 
-            var result = await _chatService.GetResponseAsync(chatRequest);
+         
+            return StreamResponse(chatRequest, cancellationToken);
+        }
+
+        private async IAsyncEnumerable<string> StreamResponse(ChatRequest chatRequest, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            var fullResponse = new StringBuilder();
+            var buffer = new StringBuilder();
+
+            await foreach (var chunk in _chatService.GetResponseStreamingAsync(chatRequest, cancellationToken))
+            {
+                fullResponse.Append(chunk);
+                buffer.Append(chunk);
+
+                if(buffer.Length >= 150)
+                {
+                    yield return buffer.ToString();
+                    buffer.Clear();
+                }
+            }
+
+            if (buffer.Length > 0) {
+                yield return buffer.ToString();
+            }
+        
 
             var assistantMessage = new ChatMessage
             {
                 MessageId = Guid.NewGuid(),
-                SessionId = request.SessionId,
+                SessionId = chatRequest.SessionId,
                 Role = ChatRole.Assistant,
-                Content = result.Response
+                Content = fullResponse.ToString()
             };
 
-            await _context.ChatMessages.AddAsync(assistantMessage,cancellationToken);
-            await _context.SaveChangesAsync();
-            return result;
+            await _context.ChatMessages.AddAsync(assistantMessage, cancellationToken);
+
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
-
+      
     }
 }

@@ -28,6 +28,11 @@ namespace Infrastructure.Tools
         [Description("Get the weather for given city.")]
         public async Task<string> GetWeather([Description("The city to get the weather for.")] string city, CancellationToken cancellationToken)
         {
+            if (string.IsNullOrWhiteSpace(city))
+            {
+                return "Şehir bilgisi boş olamaz";
+            }
+
             var apiKey = _configuration["OpenWeather:weatherApi"];
             var url = $"https://api.openweathermap.org/data/2.5/weather?q={Uri.EscapeDataString(city)}&appid={apiKey}&units=metric";
 
@@ -35,9 +40,26 @@ namespace Infrastructure.Tools
             try
             {
                 var response= await _httpClient.GetAsync(url,cancellationToken);
-                response.EnsureSuccessStatusCode();
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return $"{city} şehri bulunamadı.";
+                }
+                Console.WriteLine($"[WeatherTool] Called with city: {city}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return "Hava durumu servisi kullanılamıyor.";
+                }
+
                 var json= await response.Content.ReadAsStringAsync();
                 var weather=JsonSerializer.Deserialize<WeatherModels>(json);
+
+                if (weather == null) {
+                    return "Hava durumu servisinden geçerli veri alınamadı.";
+                
+                }
+                Console.WriteLine($"[WeatherTool] Response: ");
 
                 var description = weather.Weather.FirstOrDefault()?.Description ?? "bilinmiyor";
                 return $"{weather.CityName}: {weather.Main.Temperature} derece, hissedilen: {weather.Main.FeelsLike} derece, nem %{weather.Main.Humidity}, {description}";
@@ -46,9 +68,13 @@ namespace Infrastructure.Tools
             {
                 throw;
             }
-            catch (Exception ex)
+            catch (JsonException)
             {
-                return ex.Message;
+                return "Hava durumu servisinden beklenmeyen bir veri alındı.";
+            }
+            catch (Exception)
+            {
+                return "Hava durumu verisi alınırken beklenmedik bir hata oluştu.";
             }
 
            
