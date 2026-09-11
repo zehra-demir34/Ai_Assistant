@@ -8,7 +8,7 @@ namespace Application.Chat
 {
     public interface IChatService
     {
-        Task<ChatResponse> GetResponseAsync(ChatRequest request);
+        IAsyncEnumerable<string> GetResponseStreamingAsync(ChatRequest request, CancellationToken cancellationToken=default);
     }
 }
 

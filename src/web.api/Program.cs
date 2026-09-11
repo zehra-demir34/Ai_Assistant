@@ -13,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IChatService, MafAgentService>();
 
 builder.Services.AddHttpClient<WeatherTool>();
+builder.Services.AddHttpClient<CurrencyTool>();
 
 // Add services to the container.
 

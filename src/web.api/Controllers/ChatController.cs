@@ -29,11 +29,20 @@ namespace web.api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Chat(SendMessageCommand command,CancellationToken ct)
+        public async Task Chat(SendMessageCommand command,CancellationToken ct)
         {
-            
-            var result=await _mediator.Send(command,ct);
-            return Ok(result);
+
+            Response.ContentType = "text/event-stream";
+            Response.Headers.CacheControl = "no-cache";
+            Response.Headers.Connection = "keep-alive";
+            var result = await _mediator.Send(command, ct);
+            await foreach (var sentence in result.WithCancellation(ct))
+            {
+                await Response.WriteAsync($"data: {sentence}\n\n", ct);
+                await Response.Body.FlushAsync(ct); 
+            }
+            await Response.WriteAsync("data: [DONE]\n\n", ct);
+            await Response.Body.FlushAsync(ct);
         }
 
         [HttpGet("sessions/{sessionId}/messages")]

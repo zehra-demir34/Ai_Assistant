@@ -20,12 +20,10 @@ namespace Infrastructure
     {
         private readonly AIAgent _agent;
 
-        public MafAgentService(IConfiguration config,WeatherTool weatherTool)
+        public MafAgentService(IConfiguration config,WeatherTool weatherTool,CurrencyTool currencyTool)
         {
             var _apiKey = config["OpenAI:apiKey"];
 
-            /*OpenAIClient client = new OpenAIClient(_apiKey);
-            var chatClient = client.GetChatClient("gpt-4o-mini");*/
 
             var options = new OpenAIClientOptions
             {
@@ -39,14 +37,23 @@ namespace Infrastructure
             _agent = chatClient.AsAIAgent(
                 instructions: "You are a helpful assistant.",
                 name: "ChatAssistant",
-                tools: [AIFunctionFactory.Create(weatherTool.GetWeather)] );
+                tools: [AIFunctionFactory.Create(weatherTool.GetWeather),
+                        AIFunctionFactory.Create(currencyTool.GetExchangeRate)
+                ]
+            );
         }
 
 
-        public async Task<Application.Chat.ChatResponse> GetResponseAsync(ChatRequest request)
+        public async IAsyncEnumerable<string> GetResponseStreamingAsync(ChatRequest request,
+            [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var response = await _agent.RunAsync(request.Message);
-            return new Application.Chat.ChatResponse { Response = response.Text };
+            await foreach(var update in _agent.RunStreamingAsync(request.Message, cancellationToken: cancellationToken))
+            {
+                if (!string.IsNullOrEmpty(update.Text))
+                {
+                    yield return update.Text;
+                }
+            }
         }
     }
 }

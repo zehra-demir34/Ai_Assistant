@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 
 namespace Application.Chat.Commands.SendMessage
 {
-    public record SendMessageCommand(Guid SessionId, string Message) : IRequest<ChatResponse>;
+    public record SendMessageCommand(Guid SessionId, string Message) : IRequest<IAsyncEnumerable<string>>;
 
 }
