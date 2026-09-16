@@ -8,11 +8,14 @@ using Application.Chat.Commands.SendMessage;
 using Application.Chat.Queries.GetMessage;
 using Application.Chat.Queries.GetSession;
 using Application.Chat.Commands.DeleteSession;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace web.api.Controllers
 {
     [Route("chat")]
     [ApiController]
+    [Authorize]
     public class ChatController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -24,7 +27,8 @@ namespace web.api.Controllers
         [HttpPost("sessions")]
         public async Task<IActionResult> CreateSession(CancellationToken ct)
         {
-            var sessionId = await _mediator.Send(new CreateSessionCommand(),ct);
+            var userId=Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            var sessionId = await _mediator.Send(new CreateSessionCommand(userId),ct);
             return Ok( sessionId );
         }
 
@@ -35,6 +39,13 @@ namespace web.api.Controllers
             Response.ContentType = "text/event-stream";
             Response.Headers.CacheControl = "no-cache";
             Response.Headers.Connection = "keep-alive";
+
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            command = command with
+            {
+                UserId = userId
+            };
+
             var result = await _mediator.Send(command, ct);
             await foreach (var sentence in result.WithCancellation(ct))
             {
@@ -48,23 +59,27 @@ namespace web.api.Controllers
         [HttpGet("sessions/{sessionId}/messages")]
         public async Task<IActionResult> GetMessages(Guid sessionId,CancellationToken ct)
         {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            var messages=await _mediator.Send(new GetMessageQuery(sessionId),ct);
+            var messages =await _mediator.Send(new GetMessageQuery(sessionId,userId),ct);
             return Ok(messages);
         }
 
         [HttpGet("sessions")]
         public async Task<IActionResult> GetSessions(CancellationToken ct)
         {
-            var sessions=await _mediator.Send(new GetSessionQuery(),ct);
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            var sessions =await _mediator.Send(new GetSessionQuery(userId),ct);
             return Ok(sessions);
         }
 
         [HttpDelete("sessions/{sessionId}")]
         public async Task<IActionResult> DeleteSession(Guid sessionId,CancellationToken ct)
         {
-           
-            await _mediator.Send(new DeleteSessionCommand(sessionId),ct);
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            await _mediator.Send(new DeleteSessionCommand(sessionId, userId),ct);
             return NoContent();
         }
     }

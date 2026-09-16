@@ -26,7 +26,8 @@ namespace Application.Chat.Commands.SendMessage
 
         public async Task<IAsyncEnumerable<string>> Handle(SendMessageCommand request,CancellationToken cancellationToken)
         {
-            var sessionExists = await _context.ChatSessions.AsNoTracking().AnyAsync(x=>x.SessionId==request.SessionId,cancellationToken);
+            var sessionExists = await _context.ChatSessions.AsNoTracking()
+                .AnyAsync(x=>x.SessionId==request.SessionId && x.UserId==request.UserId,cancellationToken);
 
             if (!sessionExists)
             {
@@ -42,6 +43,7 @@ namespace Application.Chat.Commands.SendMessage
             };
 
             await _context.ChatMessages.AddAsync(userMessage,cancellationToken);
+
 
             var chatRequest = new ChatRequest
             {

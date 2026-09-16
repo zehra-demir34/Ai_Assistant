@@ -11,7 +11,9 @@ namespace Domain.Entities
     {
         [Key]
         public Guid SessionId { get; set; }
+        public Guid UserId { get; set; }
         public DateTime CreatedAt {  get; set; }= DateTime.UtcNow;
+        public AppUser User { get; set; } = null!;
         public ICollection<ChatMessage> Messages { get; set; }= new List<ChatMessage>();
     }
 }

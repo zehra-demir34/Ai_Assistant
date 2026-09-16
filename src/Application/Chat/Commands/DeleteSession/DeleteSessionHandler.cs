@@ -20,7 +20,7 @@ namespace Application.Chat.Commands.DeleteSession
 
             var session = await _context.ChatSessions
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.SessionId == request.SessionId, cancellationToken);
+                .FirstOrDefaultAsync(x => x.SessionId == request.SessionId && x.UserId==request.UserId, cancellationToken);
 
             if (session is null)
             {

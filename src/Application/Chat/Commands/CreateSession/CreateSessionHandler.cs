@@ -21,6 +21,7 @@ namespace Application.Chat.Commands.CreateSession
             var session = new ChatSession
             {
                 SessionId = Guid.NewGuid(),
+                UserId=request.UserId
             };
             _context.ChatSessions.Add(session);
             await _context.SaveChangesAsync(cancellationToken);

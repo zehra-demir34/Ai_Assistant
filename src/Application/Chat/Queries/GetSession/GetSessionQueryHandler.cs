@@ -19,7 +19,10 @@ namespace Application.Chat.Queries.GetSession
         }
         public async Task<List<ChatSession>> Handle(GetSessionQuery request,CancellationToken cancellationToken)
         {
-            return await _context.ChatSessions.AsNoTracking().OrderByDescending(x => x.CreatedAt).ToListAsync(cancellationToken);
+            return await _context.ChatSessions.AsNoTracking()
+                .Where(x=>x.UserId==request.UserId)
+                .OrderByDescending(x => x.CreatedAt)
+                .ToListAsync(cancellationToken);
         }
     }
 }
