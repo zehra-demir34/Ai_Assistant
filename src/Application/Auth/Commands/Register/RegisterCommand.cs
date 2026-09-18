@@ -9,5 +9,5 @@ namespace Application.Auth.Commands.Register
 {
     public record RegisterCommand(string Email, string Password):IRequest<RegisterResponse>;
 
-    public record RegisterResponse(string Message, Guid UserId);
+    public record RegisterResponse(string Message, Guid? UserId);
 }

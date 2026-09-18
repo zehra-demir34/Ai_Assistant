@@ -24,7 +24,7 @@ namespace Application.Auth.Commands.Register
 
             if (existingUser is not null)
             {
-                throw new InvalidOperationException("Bu email zaten kayıtlı.");
+                return new RegisterResponse("Bu email zaten kayıtlı.",null);
             }
 
             var user = new AppUser
@@ -39,7 +39,7 @@ namespace Application.Auth.Commands.Register
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(error => error.Description));
-                throw new InvalidOperationException(errors);
+                return new RegisterResponse(errors,null);
             }
 
             return new RegisterResponse("Kullanıcı başarıyla oluşturuldu.", user.Id);

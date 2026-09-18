@@ -27,19 +27,19 @@ namespace Application.Auth.Commands.Login
 
             if (user is null)
             {
-                throw new UnauthorizedAccessException("Email veya şifre hatalı.");
+                return new LoginResponse(null, null,null,"Email veya şifre hatalı");
             }
 
             var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
 
             if (!passwordValid)
             {
-                throw new UnauthorizedAccessException("Email veya şifre hatalı.");
+                return new LoginResponse(null,null,null,"Email veya şifre hatalı.");
             }
 
             var token = _jwtTokenService.CreateToken(user);
 
-            return new LoginResponse(token, user.Id, user.Email!);
+            return new LoginResponse(token, user.Id, user.Email!,"Giriş başarılı.");
         }
     }
 }
