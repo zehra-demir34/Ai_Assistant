@@ -7,6 +7,6 @@ using System.Threading.Tasks;
 
 namespace Application.Chat.Commands.CreateSession
 {
-    public record CreateSessionCommand:IRequest<Guid>;
+    public record CreateSessionCommand(Guid UserId):IRequest<Guid>;
     
 }

@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace Application.Chat.Queries.GetMessage
 {
-    public record GetMessageQuery(Guid SessionId) : IRequest<List<ChatMessage>>;
+    public record GetMessageQuery(Guid SessionId, Guid UserId) : IRequest<List<ChatMessage>>;
 }

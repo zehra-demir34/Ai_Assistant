@@ -20,7 +20,8 @@ namespace Application.Chat.Queries.GetMessage
 
         public async Task<List<ChatMessage>> Handle(GetMessageQuery request,CancellationToken cancellationToken)
         {
-            var sessionExists = await _context.ChatSessions.AsNoTracking().AnyAsync(x=>x.SessionId==request.SessionId,cancellationToken);
+            var sessionExists = await _context.ChatSessions.AsNoTracking()
+                .AnyAsync(x=>x.SessionId==request.SessionId && x.UserId==request.UserId,cancellationToken);
 
             if (!sessionExists)
             {

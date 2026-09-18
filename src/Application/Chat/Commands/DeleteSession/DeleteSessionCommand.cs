@@ -7,5 +7,5 @@ using System.Threading.Tasks;
 
 namespace Application.Chat.Commands.DeleteSession
 {
-    public record DeleteSessionCommand(Guid SessionId) : IRequest;
+    public record DeleteSessionCommand(Guid SessionId, Guid UserId) : IRequest;
 }
