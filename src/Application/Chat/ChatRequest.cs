@@ -10,6 +10,7 @@ namespace Application.Chat
     {
         public Guid SessionId { get; set; }
         public string Message { get; init; } = string.Empty;
+        public string? DocumentContent { get; init; }
 
     }
 }

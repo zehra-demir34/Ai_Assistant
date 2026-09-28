@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Application.Chat.Commands.SendMessage
+namespace Application.Document.Commands
 {
-    public record SendMessageCommand(Guid SessionId, string Message, Guid UserId) : IRequest<IAsyncEnumerable<string>>;
-
+    public record UploadDocumentCommand(Guid SessionId, IFormFile File, Guid UserId): IRequest<Guid>;
+    
 }

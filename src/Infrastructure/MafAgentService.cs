@@ -47,7 +47,31 @@ namespace Infrastructure
         public async IAsyncEnumerable<string> GetResponseStreamingAsync(ChatRequest request,
             [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            await foreach(var update in _agent.RunStreamingAsync(request.Message, cancellationToken: cancellationToken))
+
+            var prompt = request.Message;
+
+            if (!string.IsNullOrWhiteSpace(request.DocumentContent))
+            {
+                prompt = $"""
+                Answer the user's question using the document content below when it is relevant.
+
+                If the question is related to the document, use the document as context
+                and answer in your own words. Do not copy the document word-for-word.
+
+                If the question is not related to the document, answer it normally.
+
+                If the question is related to the document but the answer cannot be found
+                in the document, say that the document does not contain enough information.
+
+                --- DOCUMENT ---
+                {request.DocumentContent}
+                --- END DOCUMENT ---
+
+                 User's question:
+                {request.Message}
+                """;
+            }
+            await foreach(var update in _agent.RunStreamingAsync(prompt, cancellationToken: cancellationToken))
             {
                 if (!string.IsNullOrEmpty(update.Text))
                 {

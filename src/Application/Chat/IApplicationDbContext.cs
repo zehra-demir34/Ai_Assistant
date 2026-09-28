@@ -12,6 +12,7 @@ namespace Application.Chat
     {
         DbSet<ChatSession> ChatSessions { get; }
         DbSet<ChatMessage> ChatMessages { get; }
+        DbSet<Domain.Entities.Document> Documents { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
     }

@@ -41,6 +41,7 @@ namespace web.api.Controllers
             Response.Headers.Connection = "keep-alive";
 
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
             command = command with
             {
                 UserId = userId

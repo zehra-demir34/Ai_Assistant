@@ -20,7 +20,7 @@ namespace Infrastructure
 
         public DbSet<ChatSession> ChatSessions => Set<ChatSession>();
         public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
-
+        public DbSet<Domain.Entities.Document> Documents => Set<Domain.Entities.Document>();
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -30,6 +30,13 @@ namespace Infrastructure
                 .WithMany(user => user.Sessions)
                 .HasForeignKey(session => session.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Domain.Entities.Document>()
+                .HasOne(document=>document.Session)
+                .WithMany(session=>session.Documents)
+                .HasForeignKey(document=>document.SessionId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
+        
     }
 }

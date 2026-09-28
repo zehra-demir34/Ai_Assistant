@@ -1,10 +1,12 @@
 using Application.Auth;
 using Application.Chat;
 using Application.Chat.Commands.CreateSession;
+using Application.Document;
 using Domain.Entities;
 using Infrastructure;
 using Infrastructure.Auth;
 using Infrastructure.Tools;
+using Infrastructure.Document;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
@@ -22,7 +24,7 @@ builder.Services.AddScoped<IChatService, MafAgentService>();
 builder.Services.AddHttpClient<WeatherTool>();
 builder.Services.AddHttpClient<CurrencyTool>();
 
-
+builder.Services.AddScoped<IDocumentTextExtractor,DocumentTextExtractor>();
 
 builder.Services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
 
