@@ -24,9 +24,9 @@ namespace web.api.Controllers
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-            var documentId = await _mediator.Send(new UploadDocumentCommand(sessionId, file, userId), cancellationToken);
+            var response = await _mediator.Send(new UploadDocumentCommand(sessionId, file, userId), cancellationToken);
 
-            return Ok(new {documentId});
+            return Ok(response);
         }
     }
 }

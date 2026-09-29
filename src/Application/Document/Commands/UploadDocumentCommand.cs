@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Document.Commands
 {
-    public record UploadDocumentCommand(Guid SessionId, IFormFile File, Guid UserId): IRequest<Guid>;
-    
+    public record UploadDocumentCommand(Guid SessionId, IFormFile File, Guid UserId): IRequest<UploadDocumentResponse>;
+    public record UploadDocumentResponse(Guid? DocumentId, string Message);
+
 }
