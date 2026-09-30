@@ -1,4 +1,5 @@
-﻿using Domain.Entities;
+﻿using Application.Document;
+using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,11 +18,10 @@ namespace Application.Chat.Commands.SendMessage
         private readonly IChatService _chatService;
         private readonly IApplicationDbContext _context;
 
-
         public SendMessageHandler(IChatService chatService, IApplicationDbContext context)
         {
             _chatService = chatService;
-            _context = context;
+            _context = context;     
         }
 
         public async Task<IAsyncEnumerable<string>> Handle(SendMessageCommand request,CancellationToken cancellationToken)
@@ -34,6 +34,7 @@ namespace Application.Chat.Commands.SendMessage
                 throw new KeyNotFoundException("Session not found.");
             }
 
+
             var userMessage = new ChatMessage
             {
                 MessageId = Guid.NewGuid(),
@@ -45,13 +46,21 @@ namespace Application.Chat.Commands.SendMessage
             await _context.ChatMessages.AddAsync(userMessage,cancellationToken);
 
 
+            var documents = await _context.Documents
+                 .AsNoTracking()
+                 .Where(x => x.SessionId == request.SessionId && x.UserId == request.UserId)
+                 .ToListAsync(cancellationToken);
+
+            var documentContent = string.Join("\n\n", documents.Select(x => x.Content));
+
             var chatRequest = new ChatRequest
             {
                 SessionId = request.SessionId,
-                Message = request.Message
+                Message = request.Message,
+                DocumentContent = documentContent
             };
 
-         
+
             return StreamResponse(chatRequest, cancellationToken);
         }
 

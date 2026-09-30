@@ -15,5 +15,6 @@ namespace Domain.Entities
         public DateTime CreatedAt {  get; set; }= DateTime.UtcNow;
         public AppUser User { get; set; } = null!;
         public ICollection<ChatMessage> Messages { get; set; }= new List<ChatMessage>();
+        public ICollection<Document> Documents { get; set; }=new List<Document>();
     }
 }
